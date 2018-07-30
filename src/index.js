@@ -1,12 +1,18 @@
-/* ДЗ 2 - работа с массивами и объеектами */
+/* ДЗ 2 - работа с массивами и объектами */
 
 /*
  Задание 1:
 
  Напишите аналог встроенного метода forEach для работы с массивами
  Посмотрите как работает forEach и повторите это поведение для массива, который будет передан в параметре array
+
  */
 function forEach(array, fn) {
+	
+	for (let i = 0; i < array.length; i++) {
+		
+		fn(array[i], i, array);
+	}	
 }
 
 /*
@@ -16,6 +22,14 @@ function forEach(array, fn) {
  Посмотрите как работает map и повторите это поведение для массива, который будет передан в параметре array
  */
 function map(array, fn) {
+	var result = [];
+	
+	for (let i = 0; i < array.length; i++) {
+		
+		result.push( fn(array[i], i, array) );
+	}	
+	
+	return result;
 }
 
 /*
@@ -30,12 +44,20 @@ function reduce(array, fn, initial) {
 /*
  Задание 4:
 
- Функция должна перебрать все свойства объекта, преобразовать их имена в верхний регистр и вернуть в виде массива
+ Функция должна перебрать все свойства объекта, преобразовать их имена юtoUpperCase и вернуть в виде массива
 
  Пример:
    upperProps({ name: 'Сергей', lastName: 'Петров' }) вернет ['NAME', 'LASTNAME']
  */
 function upperProps(obj) {
+	var result = [];
+	
+	for (var prop in obj) {
+		
+		result.push( prop.toUpperCase() );
+	}		
+	
+	return result;
 }
 
 /*
