@@ -77,8 +77,14 @@ function upperProps(obj) {
 function slice(array, from = 0, to = array.length) {
 	let len = array.length;
 
-	from = (from >= 0) ? from: len + from;	
-  to = (to >= 0) ? to : len + to;
+	to = (to >= 0) ? to : len + to;
+  if (to > len) to = len;
+	if (to < -len) to = -len;
+	
+	from = (from >= 0) ? from: len + from;
+  if (from > len) from = len;
+	if (from < -len) from = 0;
+	
 
 	let size = to - from;
 	
