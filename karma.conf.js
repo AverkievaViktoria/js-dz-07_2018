@@ -20,7 +20,7 @@ module.exports = function(config) {
             fixWebpackSourcePaths: true
         },
         port: 9876,
-        browsers: ['ChromeHeadless'], // или Chrome или Firefox
+        browsers: ['Firefox'], // или Chrome или Firefox
         captureTimeout: 20000,
         singleRun: true,
         plugins: [

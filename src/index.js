@@ -39,6 +39,14 @@ function map(array, fn) {
  Посмотрите как работает reduce и повторите это поведение для массива, который будет передан в параметре array
  */
 function reduce(array, fn, initial) {
+	let i = initial ? 0 : 1;
+	let result = initial ? initial : array[0];
+	
+	for (i; i < array.length; i++) {	
+		result = fn(result, array[i], i, array);
+	}	
+	
+	return result;
 }
 
 /*
@@ -66,7 +74,22 @@ function upperProps(obj) {
  Напишите аналог встроенного метода slice для работы с массивами
  Посмотрите как работает slice и повторите это поведение для массива, который будет передан в параметре array
  */
-function slice(array, from, to) {
+function slice(array, from = 0, to = array.length) {
+	let len = array.length;
+
+	from = (from >= 0) ? from: len + from;	
+  to = (to >= 0) ? to : len + to;
+
+	let size = to - from;
+	
+	let result = [];
+	if (size > 0) {	
+		for (let i = 0; i < size; i++) {
+       result[i] = array[from + i];
+    }
+	}	
+
+	return result;	
 }
 
 /*
