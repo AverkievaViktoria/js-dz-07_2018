@@ -37,6 +37,17 @@ const homeworkContainer = document.querySelector('#homework-container');
  https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json
  */
 function loadTowns() {
+  /*
+  <div id="loading-block">Загрузка...</div>
+<div id="filter-block" style="display: none;">
+  <input type="text" placeholder="название города" id="filter-input">
+
+  <div id="filter-result"></div>
+</div>
+*/
+  const filterResult = document.querySelector('#filter-result');
+
+
 }
 
 /*

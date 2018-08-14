@@ -9,11 +9,14 @@
    delayPromise(3) // вернет promise, который будет разрешен через 3 секунды
  */
 function delayPromise(seconds) {
-	let p = new Promise(function(resolve) {
+    let p = new Promise(function(resolve) {
+
         setTimeout(function() {
+        
             return resolve();
         }, seconds * 1000);
     });
+
     return p;    
 }
 
@@ -32,51 +35,32 @@ function delayPromise(seconds) {
  */
 function loadAndSortTowns() {
 
-  let p = new Promise(function(resolve) {
-     let towns = [];
+    return new Promise(function(resolve) {
+        let xhr = new XMLHttpRequest();
 
-    // отправить запрос https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json
-    let xhr = new XMLHttpRequest();
-    xhr.open('GET', 'https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json', false);
-    xhr.send();
+        xhr.open('GET', 'https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json', true);
+        xhr.responseType = 'json'; 
 
-    if (xhr.status != 200) {
-      // обработать ошибку
-      alert( xhr.status + ': ' + xhr.statusText ); // пример вывода: 404: Not Found
-    } else {
-      // вывести результат
-      // alert( xhr.responseText ); // responseText -- текст ответа.
-      let obj;
-      try {
-        obj = JSON.parse(xhr.responseText);
-      } catch (e) {
-        alert( "Некорректный ответ " + e.message );
-      }
-  /*    for (let i = 0; i < obj.length; i++) {
-         console.log(obj[i]);
-   
-      }
+        xhr.addEventListener('load', function () {
+            let towns = xhr.response;
+            
+            towns.sort(function (a, b) {
+                if (a.name > b.name) {
+                    return 1;
+                }
+                if (a.name < b.name) {
+                    return -1;
+                }
 
-      for(let o in obj) { 
-          console.log(obj[o].name);
-          towns.push(obj[o].name) 
-      }*/
-      //towns = xhr.responseText;
+                return 0;
+            });
 
-      for(let o in obj) { 
-       //   console.log(obj[o].name);
-          towns.push(obj[o].name) 
-      }
-      console.log(obj);
-    }
-    // отсортировать массив
-    towns.sort();
-    console.log(towns);
+            resolve(towns);   
+        });
 
-     
-  });
-
-  return p;    
+        xhr.send();    
+    });
+  
 }
 
 export {
