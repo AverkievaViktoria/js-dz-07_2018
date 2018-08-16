@@ -1,6 +1,3 @@
-// todo ??? towns = towns.map((town, str) => isMatching(towns, str));
-//  ✖ должен показываться список городов, соответствующих фильтру
-
 /*
  Страница должна предварительно загрузить список городов из
  https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json
