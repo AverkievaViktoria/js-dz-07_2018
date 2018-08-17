@@ -156,10 +156,8 @@ filterInput.addEventListener('keyup', function(e) {
     filterResult.innerHTML = listFilterResults;
 });  
 
-document.body.addEventListener('click', function(e) {
-    if (e.target.tagName == 'BUTTON') {
-        updateTowns();
-    }
+updateBlock.addEventListener('click', function(e) {
+  updateTowns();
 });  
 
 export {
