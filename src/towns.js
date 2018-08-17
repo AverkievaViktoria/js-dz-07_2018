@@ -37,54 +37,77 @@ const homeworkContainer = document.querySelector('#homework-container');
  https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json
  */
 
-loadTowns()
-    .then((data) => {
-        loadingBlock.style.display = 'none';
-        filterBlock.style.display = 'block';
-        filterInput.style.display = 'block';
-        filterResult.style.cursor = 'pointer';
+var allTowns;
 
-        filterInput.addEventListener('keyup', function(e) {
-            // это обработчик нажатия кливиш в текстовом поле
-            let str = e.target.value;
-            let listFilterResults = '';
+updateTowns();
 
-            if (str !== '') {
-                for (let i = 0; i < data.length; i++) {
-                    if (isMatching(data[i].name, str)) {
-                        listFilterResults += '<div>' + data[i].name + '</div>';
-                    }
-                }
-            }
-            filterResult.innerHTML = listFilterResults;
-        });  
-    });
+const btn = document.createElement('button');
+
+btn.innerHTML = 'Обновить список городов';
+btn.id = 'update-block';
+btn.style.display = 'none';
+homeworkContainer.insertBefore(btn, homeworkContainer.childNodes[0]);
+
+/* Блок с кнопкой обновления */
+const updateBlock = homeworkContainer.querySelector('#update-block');
+
+updateBlock.style.display = 'none';
+
+function updateTowns() {
+    loadTowns()
+        .then((data) => {
+            loadingBlock.style.display = 'none';
+            filterBlock.style.display = 'block';
+            filterInput.style.display = 'block';
+            filterResult.style.cursor = 'pointer';
+            updateBlock.style.display = 'block';
+            allTowns = data;
+        })
+        .catch(() => {
+            alert('loadTowns catch');
+        });
+}    
 
 function loadTowns() {
-    return new Promise(function(resolve) {
+    return new Promise(function(resolve, reject) {
         let xhr = new XMLHttpRequest();
 
         xhr.open('GET', 'https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json', true);
         xhr.responseType = 'json'; 
-
-        xhr.addEventListener('load', function () {
+        
+        const transferComplete = () => {
+            
             let towns = xhr.response;
             
-            towns.sort(function (a, b) {
-                if (a.name > b.name) {
-                    return 1;
-                }
-                if (a.name < b.name) {
-                    return -1;
-                }
+            if (xhr.status >= 400) {
+                reject();
+            } else {
+                towns.sort(function (a, b) {
+                    if (a.name > b.name) {
+                        return 1;
+                    }
+                    if (a.name < b.name) {
+                        return -1;
+                    }
 
-                return 0;
-            });
+                    return 0;
+                });
 
-            resolve(towns);   
-        });
+                resolve(towns);
+            }
+  
+        };
+        const transferFailed = () => {
+            reject();
+        };
+        const transferCanceled = () => {
+            reject();
+        };
 
-        xhr.send();  
+        xhr.addEventListener('load', transferComplete, false);
+        xhr.addEventListener('error', transferFailed, false);
+        xhr.addEventListener('abort', transferCanceled, false);
+        xhr.send();
     });            
 }
 
@@ -119,6 +142,27 @@ const filterBlock = homeworkContainer.querySelector('#filter-block');
 const filterInput = homeworkContainer.querySelector('#filter-input');
 /* Блок с результатами поиска */
 const filterResult = homeworkContainer.querySelector('#filter-result');
+
+filterInput.addEventListener('keyup', function(e) {
+    // это обработчик нажатия кливиш в текстовом поле
+    let str = e.target.value;
+    let listFilterResults = '';
+
+    if (str !== '') {
+        for (let i = 0; i < allTowns.length; i++) {
+            if (isMatching(allTowns[i].name, str)) {
+                listFilterResults += '<div>' + allTowns[i].name + '</div>';
+            }
+        }
+    }
+    filterResult.innerHTML = listFilterResults;
+});  
+
+document.body.addEventListener('click', function(e) {
+    if (e.target.tagName == 'BUTTON') {
+        updateTowns();
+    }
+});  
 
 export {
     loadTowns,
