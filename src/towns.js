@@ -51,8 +51,6 @@ homeworkContainer.insertBefore(btn, homeworkContainer.childNodes[0]);
 /* Блок с кнопкой обновления */
 const updateBlock = homeworkContainer.querySelector('#update-block');
 
-updateBlock.style.display = 'none';
-
 function updateTowns() {
     loadTowns()
         .then((data) => {
@@ -60,11 +58,11 @@ function updateTowns() {
             filterBlock.style.display = 'block';
             filterInput.style.display = 'block';
             filterResult.style.cursor = 'pointer';
-            updateBlock.style.display = 'block';
+            updateBlock.style.display = 'none';
             allTowns = data;
         })
         .catch(() => {
-            alert('loadTowns catch');
+            updateBlock.style.display = 'block';
         });
 }    
 
