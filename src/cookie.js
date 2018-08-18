@@ -64,7 +64,6 @@ function createItem(list, name, value, showFlg = true) {
     if (!showFlg) {
         tr.style.display = 'none';
     }
-
 }
 
 function deleteCookieTR(e) {
@@ -82,67 +81,37 @@ function deleteCookieTR(e) {
 
 homeworkContainer.addEventListener('click', deleteCookieTR);
 
-function updateItems() {
-    // очистить список
-    for (let i = 0; i < listTable.children.length; i++) {
-        listTable.removeChild(listTable.children[i]);
-    }
+const getCookies = () => {
 
-    // пройти по всем кукам
-    // получаем строку куков
-    let cookieStr = document.cookie;
-    //console.log('cookieStr = ', cookieStr);
+    return document.cookie.split('; ').reduce((prev, curr) => {
+        const [name, value] = curr.split('=');
+       
+        if (name != '') {
+            prev[name] = value;
 
-    // разбиваем на массив
-    let cookieArray = cookieStr.split(';');
-    
-    // удалим пробельные символы (если они, вдруг, есть) в начале и в конце у каждой куки
-    for (let j = 0; j < cookieArray.length; j++) {
-        cookieArray[j] = cookieArray[j].replace(/(\s*)\B(\s*)/g, '');
-    }
-
-    // результирующий упорядоченный массив
-    // каждый элемент будет объектом с методами name и value                                                                       
-    // name - имя куки, value - упорядоченный массив значений куки
-    let cookieNameArray = new Array({name: '', value: new Array()});    
-
-    // обрабатываем каждую куку
-    for (let i = 0; i < cookieArray.length; i++) {
-        let keyValue = cookieArray[i].split('='),     // разделяем имя и значение       
-        cookieVal = unescape(keyValue[1]).split(';'); // разделяем значения, если они заданы перечнем
-
-        // удаляем пробельные символы  (если они, вдруг, есть) у значений в начале и в конце
-        for (let j=0; j<cookieVal.length; j++) {
-            cookieVal[j] = cookieVal[j].replace(/(\s*)[\B*](\s*)/g, '');
+            return prev;
         }
-        keyValue[0] = keyValue[0].replace(/(\s*)[\B]*(\s*)/g, '');
-        // вот получился такой cookie-объект
-        cookieNameArray[i] = {
-            name: keyValue[0],
-            value: cookieVal
-        };
-    }
+    }, {});
+}
+
+function updateItems() {
+    let allCookies = getCookies();
 
     // очистить таблицу с куками
     listTable.innerHTML = '';
-    for (let i = 0; i < cookieNameArray.length; i++) {
-        let values = '';
 
-        for (let j = 0; j < cookieNameArray[i].value.length; j++) {
-            values += ' ' + cookieNameArray[i].value[j];
-        }
-        let str = filterNameInput.value;
-        let flg = true;
+    for (var cookieName in allCookies) {
+        if ( allCookies.hasOwnProperty(cookieName) ) {
+            let str = filterNameInput.value;
+            let flg = true;
 
-        if (!isMatching(cookieNameArray[i].name, str)) {
-            flg = false;        
+            if ( !isMatching(cookieName, str) && !isMatching(allCookies[cookieName], str) ) {
+                flg = false;        
+            }
+            createItem(listTable, cookieName, allCookies[cookieName], flg);
         }
-        createItem(listTable, cookieNameArray[i].name, values, flg);
     }
 }
-
-// вывести доступные куки
-updateItems();
 
 filterNameInput.addEventListener('keyup', function(e) {
     // здесь можно обработать нажатия на клавиши внутри текстового поля для фильтрации cookie
@@ -180,3 +149,7 @@ function isMatching(full, chunk) {
         
     return true;  
 }
+
+// вывести доступные куки
+updateItems();
+
