@@ -6,19 +6,25 @@ let rules = require('./webpack.config.rules')();
 let path = require('path');
 
 rules.push({
-    test: /\.css$/,
-    use: ExtractTextPlugin.extract({
-        fallback: 'style-loader',
-        use: 'css-loader'
-    })
+    // test: /\.css$/,
+    // use: ExtractTextPlugin.extract({
+    //     fallback: 'style-loader',
+    //     use: 'css-loader',
+    // })
+    test: /\.scss$/,
+    use: [
+        'style-loader', // creates style nodes from JS strings
+        'css-loader', // translates CSS into CommonJS
+        'sass-loader' // compiles Sass to CSS, using Node Sass by default
+    ]
 });
 
 module.exports = {
     entry: {
-        cookie: './src/cookie.js'
+        friends: './src/friends.js'
     },
     devServer: {
-        index: 'cookie.html'
+        index: 'friends.html'
     },
     output: {
         filename: '[name].[hash].js',
@@ -36,10 +42,10 @@ module.exports = {
         }),
         new ExtractTextPlugin('styles.css'),
         new HtmlPlugin({
-            title: 'Cookies',
-            template: 'cookie.hbs',
-            filename: 'cookie.html',
-            chunks: ['cookie']
+            title: 'Friends',
+            template: 'friends.hbs',
+            filename: 'friends.html',
+            chunks: ['friends']
         }),
         new CleanWebpackPlugin(['dist'])
     ]
