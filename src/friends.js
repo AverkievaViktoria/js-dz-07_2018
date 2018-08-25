@@ -1,4 +1,3 @@
-// selected заменить на isSelected
 import { 
     // фильтрация списка
     filterFriends
@@ -27,7 +26,8 @@ const save = document.querySelector('#js-save');
 let storage = localStorage;
 // список друзей
 var data = [
-    /*{
+    /* 
+    {
         id: 0,
         first_name: 'Иван',
         last_name: 'Петров',
@@ -49,7 +49,7 @@ filterSelected.addEventListener('keyup', e => {
 });
 // сохранить списки в localStorage
 save.addEventListener('click', () => {
-    //console.log(data);
+    // console.log(data);
     storage.clear();
     storage.setItem('data', JSON.stringify(data));
     alert('Списки сохранены.');
@@ -58,56 +58,40 @@ save.addEventListener('click', () => {
 lists.addEventListener('click', function(e) {
     let listAdd = listAll;
     let listRemove = listSelected;
+    let filter = filterAll;
+
     if (e.target.classList.contains('js-add')) {
         listAdd = listSelected;
         listRemove = listAll;
+        filter = filterSelected;
     }
     if ( e.target.classList.contains('js-add') || e.target.classList.contains('js-remove') ) {
         const li = e.target.parentNode;
         const id = li.getAttribute('data-id');
 
         listRemove.removeChild(li);
-//      console.log(data);
         data.forEach(friend => {
-//      console.log(friend.id);
-//      console.log(id);
-
             if (friend.id == id) {
                 friend.selected = !friend.selected;
                 listAdd.appendChild(createFriendNode(friend));
-//              console.log(friend);
+
                 return;
             }
         });
+
+        filterFriends(listAdd, filter.value);
     } 
 });
 
 // ///////////////////////////////////////////
 // при обновлении страницы
 loadFriendsFromStorage();
-/*
-function union_arr(arr1, arr2) {
-    // объединяем массивы
-    var arr3 = arr1.concat(arr2);
-    console.log(arr3);
-    // сортируем полученный массив
-    arr3.sort();
-    // формируем новый массив без повторяющихся элементов
-    var arr = [arr3[0]]; 
-    for (var i = 1; i < arr3.length; i++) {
-        if (arr3[i] != arr3[i-1]) {
-            arr.push(arr3[i]);
-        }
-    }
-    return arr;
-}*/
 
 // загрузка списка друзей из VK или localStorage
 // ///////////////////////////////////////////
 // загружать при обновлении страницы
 function loadFriendsFromStorage() {
-    data = JSON.parse(storage.data || '{}');
-    console.log(data);
+    data = JSON.parse(storage.data || '[]');
     // первым читаем всегда localStorage (здесь проверка не нужна???)
     renderFriends(data);
 }
@@ -116,36 +100,31 @@ function loadFriendsFromStorage() {
 // перекинуть данные из формата ВК в формат data
 function loadFriendsFromVK(friends) {
     let resData = [];
-    friends.forEach(function(friend) {
-        //console.log('friend', friend);
-        let item = {};
-        item.id = friend.id;
-        item.first_name = friend.first_name;
-        item.last_name = friend.last_name;
-        item.photo_100 = friend.photo_100;
-        item.selected = false;
-        resData.push(item);
-    });
 
-    console.log('data after VK', resData);
+    if (friends) {
+        friends.forEach(function(friend) {
+            let item = {};
+
+            item.id = friend.id;
+            item.first_name = friend.first_name;
+            item.last_name = friend.last_name;
+            item.photo_100 = friend.photo_100;
+            item.selected = false;
+            resData.push(item);
+        });
+    }
 
     // сравнить с localStorage, убрать дубли
-    // todo - выделить в функцию
-    console.log(data);
-    console.log(resData);
     let result = [...data, ...resData];
-    console.log(result);
+
     result = result.filter((el, i) => {
         return result.findIndex(item => {
-            ///console.log('i', item);
             return (item.id === el.id)
         }) === i
     });
-    console.log('result = ', result);
 
     return result;
 }
-
 
 // загрузка списка друзей из VK
 // ///////////////////////////////////////////
@@ -168,16 +147,14 @@ function auth() {
 }
 
 function callAPI(method, params) {
-    params.v = '5.76'
+    params.v = '5.76';
 
     return new Promise( (resolve, reject) => {
 
         VK.api(method, params, (data => {
             if (data.error) {
-                console.log('reject(data.error);');
                 reject(data.error);
             } else {
-                console.log('resolve(data.response);');
                 resolve(data.response);
             }
         }))
@@ -186,26 +163,22 @@ function callAPI(method, params) {
 
 auth()
     .then(() => {
-        console.log('.then(() => {');   
-        return callAPI('users.get', {'name_case': 'gen'});
+        return callAPI('users.get', { 'name_case': 'gen' });
     })
     .then(([me]) => {   
-        console.log('.then(([me])');    
         const headerInfo = document.querySelector('.header-title')
+        
         headerInfo.textContent = `Друзья на странице ${me.first_name} ${me.last_name}`;
 
-        return callAPI('friends.get', { fields: 'city, country, photo_100'});
+        return callAPI('friends.get', { fields: 'city, country, photo_100' });
     })
     .then (friends => {
-       console.log('friends = ', friends);
-       // сохранить друзей в списке с флагами
-       data = loadFriendsFromVK(friends.items);
-       renderFriends(data);
+        // сохранить друзей в списке с флагами
+        data = loadFriendsFromVK(friends.items);
+        renderFriends(data);
     })
     .catch (() => {
-        console.log('catch');
     });
-    
       
 // ////////////////////////////////////////////
 // перетащить друга из одного списка в другой
@@ -219,51 +192,44 @@ function makeDnD(zones) {
             if (e.target.classList.contains('js-draggable')) {
                 currentDrag = { source: zone, node: e.target };
             }
-            //console.log(currentDrag);
         }
 
         function handleDragOver(e) {
             e.preventDefault();
-            // ничего не делать
 
             return false;
         }
 
         function handleEnter(e) {
             const target = e.target.parentElement;
-            if (!target.matches('li')) return;
-            console.log(target);
+
+            if (!target.matches('li')) {
+
+                return;
+            }    
         }
 
         function handleDrop(e) {
         // завершение перетаскивания 
-        //- удалить элемент на старом месте
-        //- создать элемент на новом месте
+        // - удалить элемент на старом месте
+        // - создать элемент на новом месте
             if (currentDrag) {
                 e.preventDefault();
 
-        //console.log('cur', currentDrag, e);
                 if (currentDrag.source !== zone) {
-                    console.log('zone ', zone);
-                    console.log('e.target ', e.target);
-                    if (e.target.classList.contains('js-draggable')) {
-        ///console.log('cur', currentDrag, e);
-                    
-                    } else {
+                    //if (e.target.classList.contains('js-draggable')) {
+                        // todo !!!
+                    //} else {
 
-                        //if (zone.classList.contains('js-list-selected')) {
                         if (zone.getAttribute('id') == 'js-list-selected') {
-                            console.log(' currentDrag.node = ',currentDrag.node, e.target.nextElementSibling);
                             const li = currentDrag.node;
-                            console.log(li);
                             const id = li.getAttribute('data-id');
-                            console.log(id);
+                            
                             data.forEach(friend => {
                                 if (friend.id == id) {
-                                    console.log(friend);
                                     friend.selected = true;
                                     const friendBtn = li.children[2];
-                                    console.log(friendBtn);
+                                    
                                     friendBtn.className = 'list-item--btn js-remove';
                                     friendBtn.src = `./src/images/remove.png`;
 
@@ -271,26 +237,26 @@ function makeDnD(zones) {
                                 }
                             });
                             zone.insertBefore(currentDrag.node, zone.lastElementChild);
+                            filterFriends(listSelected, filterSelected.value);
                         } else {
                             const li = currentDrag.node;
-                            console.log(li);
                             const id = li.getAttribute('data-id');
-                            console.log(id);
+                            
                             data.forEach(friend => {
                                 if (friend.id == id) {
-                                    console.log(friend);
                                     friend.selected = false;
                                     const friendBtn = li.children[2];
-                                    console.log(friendBtn);
+                                    
                                     friendBtn.className = 'list-item--btn js-add';
-                                    friendBtn.src = `./src/images/add.png`;
+                                    friendBtn.src = './src/images/add.png';
 
                                     return;
                                 }
                             });
                             zone.insertBefore(currentDrag.node, zone.lastElementChild);
+                            filterFriends(listAll, filterAll.value);
                         }
-                    }
+                    //}
                 }
                 currentDrag = null;
             }
@@ -317,13 +283,15 @@ var templateRenderFriends = function(data) {
     var selected = [];
     var templateFn = Handlebars.compile(templateList.innerHTML), template;
 
-    data.forEach(function(friend) {
-        if (friend.selected) {
-            selected.push(friend);
-        } else {
-            all.push(friend);
-        }
-    });
+    if (data) {
+        data.forEach(function(friend) {
+            if (friend.selected) {
+                selected.push(friend);
+            } else {
+                all.push(friend);
+            }
+        });
+    }    
 
     template = templateFn({ list: all });
     listAll.innerHTML += template;
@@ -341,13 +309,15 @@ function renderFriends(friends) {
     var all = [];
     var selected = [];
 
-    friends.forEach(function(friend) {
-        if (friend.selected) {
-            selected.push(friend);
-        } else {
-            all.push(friend);
-        }
-    });
+    if (friends) {
+        friends.forEach(function(friend) {
+            if (friend.selected) {
+                selected.push(friend);
+            } else {
+                all.push(friend);
+            }
+        });
+    }    
 
     all.map(createFriendNode).forEach(node => {
         listAll.appendChild(node);
@@ -378,10 +348,10 @@ function createFriendNode(friend) {
 
     if (friend.selected) {
         friendBtn.className = 'list-item--btn js-remove';
-        friendBtn.src = `./src/images/remove.png`;
+        friendBtn.src = './src/images/remove.png';
     } else {
         friendBtn.className = 'list-item--btn js-add';
-        friendBtn.src = `./src/images/add.png`;
+        friendBtn.src = './src/images/add.png';
     }
     friendBtn.draggable = false;
     friendNode.appendChild(friendBtn);
