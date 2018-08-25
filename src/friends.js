@@ -1,3 +1,4 @@
+// selected заменить на isSelected
 import { 
     // фильтрация списка
     filterFriends
@@ -130,18 +131,24 @@ function loadFriendsFromVK(friends) {
 
     // сравнить с localStorage, убрать дубли
     // todo - выделить в функцию
+    console.log(data);
+    console.log(resData);
     let result = [...data, ...resData];
+    console.log(result);
     result = result.filter((el, i) => {
-        result.findIndex(item => {
-            console.log('i', item);
+        return result.findIndex(item => {
+            ///console.log('i', item);
             return (item.id === el.id)
         }) === i
     });
     console.log('result = ', result);
 
-    return resData;//result;
+    return result;
 }
 
+
+// загрузка списка друзей из VK
+// ///////////////////////////////////////////
 VK.init({
     apiId: 6667188
 });
@@ -296,6 +303,14 @@ function makeDnD(zones) {
     })   
 }
 
+function createFriend(list) {
+    var templateFn = require('../friends-template.hbs');
+
+    return templateFn({
+        list: list
+    });
+}
+
 // шаблон для вставки
 var templateRenderFriends = function(data) {
     var all = [];
@@ -319,6 +334,10 @@ var templateRenderFriends = function(data) {
 // ///////////////////////////////////////////
 // создание элементов списка на странице
 function renderFriends(friends) {
+    // очистить списки
+    listAll.innerHTML = '';
+    listSelected.innerHTML = '';
+
     var all = [];
     var selected = [];
 

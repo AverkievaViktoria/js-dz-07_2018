@@ -3,8 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>{{htmlWebpackPlugin.options.title}}</title>
-    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.10/handlebars.min.js"></script>
-    <script src="handlebars.js"></script> -->
     <script src="http://vk.com/js/api/openapi.js" type="text/javascript"></script>
 </head>
 <body>
@@ -12,18 +10,5 @@
     {{> "./friends-content.hbs"}}
 </div>
 
-<script type="text/x-handlebars-template" id="templateList">
-    {{#each list}}
-		<li class="list-item js-draggable" draggable="true" data-id="{{id}}">
-			<img class="list-item--ava" src="{{photo_100}}" draggable="false">
-			<div class="list-item--name">{{name}} {{last_name}}</div>
-			{{#if selected}}
-			<img class="list-item--btn js-remove" src="./src/images/remove.png" draggable="false">
-			{{else}}
-			<img class="list-item--btn js-add" src="./src/images/add.png" draggable="false">
-			{{/if}}
-		</li>
-    {{/each}}
-</script>
 </body>
 </html>
