@@ -21,10 +21,10 @@ rules.push({
 
 module.exports = {
     entry: {
-        friends: './src/friends.js'
+        index: './src/index.js'
     },
     devServer: {
-        index: 'friends.html'
+        index: 'index.html'
     },
     output: {
         filename: '[name].[hash].js',
@@ -42,10 +42,10 @@ module.exports = {
         }),
         new ExtractTextPlugin('styles.css'),
         new HtmlPlugin({
-            title: 'Friends',
-            template: 'friends.hbs',
-            filename: 'friends.html',
-            chunks: ['friends']
+            title: 'GeoOtziv',
+            template: 'index.hbs',
+            filename: 'index.html',
+            chunks: ['index']
         }),
         new CleanWebpackPlugin(['dist'])
     ]

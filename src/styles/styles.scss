@@ -1,12 +1,14 @@
 //--- Colors ---//
 $white: #fff;
+$beige: #f0f0f0;
 $orange: #ff8663;
 
 $light-gray: #9f9f9f;
 $light-grey: #9f9f9f;
 
 $dark-gray: #4f4f4f;
-$dark-grey: #4f4f4f;
+$dark-grey: #4f4f4f; // rgb(79, 79, 79);
+$dl-grey: rgba(79, 79, 79, 0.749);
 
 $gray: #999; 
 $grey: #999; 
@@ -42,173 +44,142 @@ $grey: #999;
 	box-sizing: border-box;
 }
 
-body {
-	font: 14px/1.41 'Fira Sans', 'Arial', sans-serif;
-	-webkit-font-smoothing: antialiased;
-	line-height: 1.42;
-}
-html {
-}
 body, html {
+  overflow: hidden;
 	margin: 0;
 	padding: 0;
 	width: 100%;
 	height: 100%;
+  font: 14px/1.41 'Fira Sans', 'Arial', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.42;
 }
-button {
-  border: none;
-  outline: none;
-  cursor: pointer;
-}
-
-.wrapper {
-  display: flex;
-  justify-content: top;
-  flex-direction: column;
-  margin: auto;
-  min-height: 100vh;
-  background-color: $dark-gray;
-}
-	.content {
-		flex: 1 0 auto;
-	}
-	.footer {
-		flex: 0 0 auto;
-	    border-radius: 0 0 20px 20px;
-	}
-
-
 
 ul {
-	padding: 0;
-	margin: 0;
-	li{
-		list-style: none;
-	}
-}
-p {
-	padding: 0;
-	margin: 0;
-}
-a {
-	text-decoration: none;
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
 }
 
-//--- Main ---//
-.container {
-  width: 620px;
-  margin: 0 auto;
+#homework-container {
+    width: 100%;
+    height:100%;
 }
 
-.main-header {
-  text-align: center;
-  padding: 20px;
+.popup {
+    width: 380px;
+    height: 550px;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10000;
+    background-color: $white;
+    display: none;
+    border-radius: 10px;
 }
 
-.header {
-  height: 60px;
-  border-radius: 20px 20px 0 0;
-  background-color: $orange;
-}
-  .header-title {
-    float: left;
-    padding: 15px 20px;
-    font-size: 18px;
-    font-weight: bold;
+.popup-header {
+    position: relative;
+    width: 100%;
+    height: 45px;
+    padding: 10px;
+    border-radius: 15px 15px 0px 0px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
     color: $white;
-  } 
-  .header-close {
-    float: right;
-    padding: 20px;
-  }
-
-.main {
-  background-color: $light-gray;
-  height: 440px;
+    background-color: $orange;
 }
-  .main-col {
-    width: 50%;
-    float: left;
-  }
 
-    /* поле ввода для фильтрации*/
-    .input {
-      background: url("../images/search.png") no-repeat;
-      padding: 5px;
-    }
-      .input-filter {
-        padding: 10px;
-        border-radius: 20px;
-        width: 100%;
-      }
+.popup-header-icon {
 
-    /* заголовок списка друзей */
-    .title {
-        padding: 10px;
-        margin: 2px;
-        font-weight: bold;
-        background: $white;
-    }
-
-    /* список друзей*/
-    .list {
-      background-color: $white;
-      overflow-y: scroll;
-      height: 340px;
-      margin: 2px;
-    }
-    .ullist {
-      font-weight: bold;
-      height: 340px;
-    }
-      .list-item {
-        background-color: $white;
-        display: flex;
-        list-style: none;
-        justify-content: space-between;
-        margin: 0;
-        padding: 0;
-      }
-      .list-item.active{
-        background-color: $light-grey !important;
-      }
-      .list-item--ava img{
-        width: 45px;
-        height: 45px;
-      }
-      .list-item--ava {
-        margin: 2px 5px;
-        border-radius: 50%;
-        width: 45px;
-        height: 45px;
-      }
-      .list-item--name {
-        display: block;
-        float: left;
-        padding: 10px 0 10px 0;
-        font-size: 16px;
-      }
-
-      .list-item--btn {
-        margin: 10px 5px;
-        width: 20px;
-        height: 20px;
-        cursor: pointer;
-      }
-
-
-/* футтер с кнопкой сохранить */
-.footer {
-  background-color: $light-gray; 
-  height: 50px;
 }
-  .btn-close {
+
+.popup-header-text {
+
+}
+
+.popup-header-button {
     float: right;
-    margin: 5px 10px;
-    padding: 8px 20px;
     font-size: 16px;
     font-family: "FiraSans";
     color: $white;
     background-color: $orange;
-    border-radius: 20px; 
-  }
+    cursor: pointer;
+}
+
+
+.popup-main {
+    height: 350px;
+    padding: 10px;
+    font-family: 'Fira Sans', sans-serif;
+}
+
+.popup-main-reviews {
+    height: 155px;
+    overflow: auto;
+    border-bottom: solid 1px $beige;
+}
+.review-list-item {
+    font-size: 15px;
+    color: $dark-gray;
+}
+
+.form-header{
+    padding: 15px 0;
+    text-transform: uppercase;
+    color: $orange;
+}
+
+.form-input,
+.form-input,
+.form-textarea {
+    padding: 0px 10px;
+    margin-bottom: 15px;
+    width: 100%;
+    height: 34px;
+    border: 1px solid $dark-gray;
+    border-radius: 20px;
+    outline: none;
+    font-size: 15px;
+    color: $light-gray; 
+}
+
+.form-textarea {
+    padding-top: 10px;
+    height: 130px;
+    resize: none;
+}
+
+.add-button {
+    display: inline-block;
+    float: right;
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 15px;
+    border: none;
+    color: $white;
+    background-color: $orange;
+    cursor: pointer;
+}
+
+.item-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: $dark-gray;
+}
+.item-date {
+    font-size: 16px;
+    color: $dl-grey;
+}
+.item-place {
+    font-size: 16px;
+    color: $dl-grey
+}
+.item-review {
+    font-size: 15px;
+    color: $dark-gray;
+}
+
+
