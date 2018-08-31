@@ -41,15 +41,14 @@ var data = [
 // ///////////////////////////////////////////
 // фильтрация левого списка
 filterAll.addEventListener('keyup', e => {
-    filterFriends(document.querySelector('#js-list-all'), e.target.value);
+    filterFriends(listAll, e.target.value);
 });
 // фильтрация правого списка
 filterSelected.addEventListener('keyup', e => {
-    filterFriends(document.querySelector('#js-list-selected'), e.target.value);
+    filterFriends(listSelected, e.target.value);
 });
 // сохранить списки в localStorage
 save.addEventListener('click', () => {
-    // console.log(data);
     storage.clear();
     storage.setItem('data', JSON.stringify(data));
     alert('Списки сохранены.');
@@ -83,21 +82,16 @@ lists.addEventListener('click', function(e) {
     } 
 });
 
-// ///////////////////////////////////////////
-// при обновлении страницы
 loadFriendsFromStorage();
 
-// загрузка списка друзей из VK или localStorage
-// ///////////////////////////////////////////
-// загружать при обновлении страницы
+// загрузка списка друзей из localStorage
 function loadFriendsFromStorage() {
     data = JSON.parse(storage.data || '[]');
-    // первым читаем всегда localStorage (здесь проверка не нужна???)
+    // первым читаем всегда localStorage
     renderFriends(data);
 }
 
 // загружать, если есть доступ к ВК
-// перекинуть данные из формата ВК в формат data
 function loadFriendsFromVK(friends) {
     let resData = [];
 
@@ -211,52 +205,45 @@ function makeDnD(zones) {
 
         function handleDrop(e) {
         // завершение перетаскивания 
-        // - удалить элемент на старом месте
-        // - создать элемент на новом месте
             if (currentDrag) {
                 e.preventDefault();
 
                 if (currentDrag.source !== zone) {
-                    //if (e.target.classList.contains('js-draggable')) {
-                        // todo !!!
-                    //} else {
+                    if (zone.getAttribute('id') == 'js-list-selected') {
+                        const li = currentDrag.node;
+                        const id = li.getAttribute('data-id');
+                        
+                        data.forEach(friend => {
+                            if (friend.id == id) {
+                                friend.selected = true;
+                                const friendBtn = li.children[2];
+                                
+                                friendBtn.className = 'list-item--btn js-remove';
+                                friendBtn.src = './src/images/remove.png';
 
-                        if (zone.getAttribute('id') == 'js-list-selected') {
-                            const li = currentDrag.node;
-                            const id = li.getAttribute('data-id');
-                            
-                            data.forEach(friend => {
-                                if (friend.id == id) {
-                                    friend.selected = true;
-                                    const friendBtn = li.children[2];
-                                    
-                                    friendBtn.className = 'list-item--btn js-remove';
-                                    friendBtn.src = `./src/images/remove.png`;
+                                return;
+                            }
+                        });
+                        zone.insertBefore(currentDrag.node, zone.lastElementChild);
+                        filterFriends(listSelected, filterSelected.value);
+                    } else {
+                        const li = currentDrag.node;
+                        const id = li.getAttribute('data-id');
+                        
+                        data.forEach(friend => {
+                            if (friend.id == id) {
+                                friend.selected = false;
+                                const friendBtn = li.children[2];
+                                
+                                friendBtn.className = 'list-item--btn js-add';
+                                friendBtn.src = './src/images/add.png';
 
-                                    return;
-                                }
-                            });
-                            zone.insertBefore(currentDrag.node, zone.lastElementChild);
-                            filterFriends(listSelected, filterSelected.value);
-                        } else {
-                            const li = currentDrag.node;
-                            const id = li.getAttribute('data-id');
-                            
-                            data.forEach(friend => {
-                                if (friend.id == id) {
-                                    friend.selected = false;
-                                    const friendBtn = li.children[2];
-                                    
-                                    friendBtn.className = 'list-item--btn js-add';
-                                    friendBtn.src = './src/images/add.png';
-
-                                    return;
-                                }
-                            });
-                            zone.insertBefore(currentDrag.node, zone.lastElementChild);
-                            filterFriends(listAll, filterAll.value);
-                        }
-                    //}
+                                return;
+                            }
+                        });
+                        zone.insertBefore(currentDrag.node, zone.lastElementChild);
+                        filterFriends(listAll, filterAll.value);
+                    }
                 }
                 currentDrag = null;
             }
@@ -270,7 +257,7 @@ function makeDnD(zones) {
 }
 
 function createFriend(list) {
-    var templateFn = require('../friends-template.hbs');
+    let templateFn = require('../friends-template.hbs');
 
     return templateFn({
         list: list
@@ -279,9 +266,9 @@ function createFriend(list) {
 
 // шаблон для вставки
 var templateRenderFriends = function(data) {
-    var all = [];
-    var selected = [];
-    var templateFn = Handlebars.compile(templateList.innerHTML), template;
+    let all = [];
+    let selected = [];
+    let templateFn = Handlebars.compile(templateList.innerHTML), template;
 
     if (data) {
         data.forEach(function(friend) {
@@ -306,8 +293,8 @@ function renderFriends(friends) {
     listAll.innerHTML = '';
     listSelected.innerHTML = '';
 
-    var all = [];
-    var selected = [];
+    let all = [];
+    let selected = [];
 
     if (friends) {
         friends.forEach(function(friend) {
