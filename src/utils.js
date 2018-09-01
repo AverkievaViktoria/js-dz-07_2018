@@ -33,12 +33,54 @@ const checkPopupPosition = (x, y, w, h) => {
 	return {x, y};
 }
 
-
-export const showPopup = (jsPopup, x, y, data) => {
+export const openPopup = (x, y, address) => {
+	const jsPopup = document.querySelector('#js-popup');
 	let pos = checkPopupPosition(x, y, jsPopup.offsetWidth, jsPopup.offsetHeight);
 	
+	const jsAddress = document.querySelector('#js-address');
+	jsAddress.innerHTML = address; 
+
+	const jsReviewsList = document.querySelector('#js-reviews-list');
+	jsReviewsList.innerHTML = 'Отзывов пока нет...';
+
 	jsPopup.style.left = pos.x + 'px';
 	jsPopup.style.top = pos.y + 'px';
 
 	jsPopup.style.display = 'block';
+}
+
+
+// возвращает объект - todo в модуль!!!, сюда проверку
+export let handleReview = () => {
+    const jsInputName = document.querySelector('#js-input-name');
+    const jsInputPlace = document.querySelector('#js-input-place');
+    const jsInputReview = document.querySelector('#js-input-review');
+
+    let message = '';
+    if (!jsInputName.value) {
+        message += 'Не указано имя. ' 
+    }
+    if (!jsInputPlace.value) {
+        message += 'Не указано место. ' 
+    }
+    if (!jsInputReview.value) {
+        message += 'Нет отзыва. ' 
+    }
+    if (message) {
+        alert(message);
+        return undefined;
+    }
+
+    let review = {};
+
+    review.name = jsInputName.value;
+    review.place = jsInputPlace.value;
+    review.date = new Date().toLocaleString();
+    review.review = jsInputReview.value;
+
+	jsInputName.value = '';
+    jsInputPlace.value = '';
+    jsInputReview.value = '';
+
+    return review;
 }

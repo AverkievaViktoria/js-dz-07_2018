@@ -1,18 +1,25 @@
 import { 
     isEmptyObject,
-    showPopup
+    openPopup,
+    handleReview
 } from './utils';
 
 import './styles/styles.scss';
+import renderFn from './templates/review-template.hbs';
+
+let clusterer;
+
+// текущие параметры объекта, с которым работаем
+let coords_gl = [0, 0];
+let address_gl = '';
+let id_gl;
 
 const jsMap = document.querySelector('#map');
-const jsPopup = document.querySelector('#js-popup');
+    const jsPopup = document.querySelector('#js-popup');
 // закрыть окно с отзывами
 const jsBtnClose = document.querySelector('#js-btn-close');
-// адрес места
-const jsAddress = document.querySelector('#js-address');
 // список отзывов
-const jsReviewsList = document.querySelector('#js-reviews-list');
+    const jsReviewsList = document.querySelector('#js-reviews-list');
 
 // добавить отзыв
 const jsBtnAdd = document.querySelector('#js-btn-add');
@@ -25,45 +32,38 @@ jsBtnClose.addEventListener('click', (e) => {
 });
 
 jsBtnAdd.addEventListener('click', (e) => {
-    console.log('jsBtnAdd');
-    const jsInputName = document.querySelector('#js-input-name');
-    const jsInputPlace = document.querySelector('#js-input-place');
-    const jsInputReview = document.querySelector('#js-input-review');
-
-    let message = '';
-    if (!jsInputName.value) {
-        message += 'Не указано имя. ' 
+    let review = handleReview();
+    if (review) {
+        setPlaceMarkWithReview(review, address_gl, coords_gl);
+        updateReviews(address_gl); // перерисовать отзывы
     }
-    if (!jsInputPlace.value) {
-        message += 'Не указано место. ' 
-
-    }
-    if (!jsInputReview.value) {
-        message += 'Нет отзыва. ' 
-    }
-    if (message) {
-        alert(message);
-        return;
-    }
-
-    //console.log(jsAddress.innerHTML);
-    let review = handleReview(jsInputName.value, jsInputPlace.value, jsInputReview.value);
-    //console.log('jsBtnAdd ', data);
-    setPlaceMarkWithReview(review, jsAddress.innerHTML, []);
-    createReview(jsAddress.innerHTML);
-    //console.log('jsBtnAdd ', data);
-
-    jsInputName.value = '';
-    jsInputPlace.value = '';
-    jsInputReview.value = '';
 });
 
-import renderFn from './templates/review-template.hbs';
+const createPlacemark = () => {
+    const placemark = new ymaps.Placemark(coords_gl, {
+        hintContent: address_gl,
+        preset: 'islands#violetIcon',
+    });
+    //placemark.properties.set('myId', 1);
+    placemark.properties.set('myAddress', address_gl);
+//    placemark.properties.set('myCoords', coords_gl);
+
+    clusterer.add(placemark);            
+   
+    placemark.events.add('click', e => {
+        address_gl = e.get('target').properties.get('myAddress');
+//        coords_gl = e.get('target').properties.get('myCoords');
+
+        openPopup(e.get('domEvent').get('pageX'), e.get('domEvent').get('pageY'), address_gl);
+        updateReviews(address_gl);
+    });
+};
 
 /////////////////////////////// model (данные)
 let data = [];
 /*
 let placemark = {};
+placemark.id = 1; - не нужен! поиск по адресу
 placemark.geo = [1, 1];
 placemark.address = 'address';
 placemark.reviews = [];
@@ -75,27 +75,14 @@ placemark.reviews = [];
 placemark.reviews.push(review);
 data.push(placemark);
 */
-// setReview после ввода отзыва, сохранить в data
-// возвращает объект
-let handleReview = (inputName, inputPlace, inputReview) => {
-    let review = {};
 
-    review.name = inputName;
-    review.place = inputPlace;
-    review.date = new Date().toLocaleString();
-    review.review = inputReview;
-
-    return review;
-}
 let addReview = (review, address, coords) => {
     let placemark = {};
 
     placemark.geo = coords;
     placemark.address = address;
-    if (isEmptyObject(review)) {
-        console.log('empty');
+    if (isEmptyObject(placemark.review)) {
         placemark.reviews = [];
-        console.log('push review', review);
         placemark.reviews.push(review);
     }
 
@@ -103,12 +90,11 @@ let addReview = (review, address, coords) => {
 }    
 
 const setPlaceMarkWithReview = (review, address, coords) => {
-    // найти заданный placemark по адресу, добавить в него отзыв
+    // найти в data заданный placemark по адресу, добавить в него отзыв
     let isAddressExists = false;
     data.forEach(placemark => {
         if (placemark.address == address) {
             placemark.reviews.push(review);
-            console.log('dataforEach = ', data);
             isAddressExists = true;
             return;
         }
@@ -116,36 +102,26 @@ const setPlaceMarkWithReview = (review, address, coords) => {
     // если ничего не нашли - создать
     if (!isAddressExists) {
         data.push(addReview(review, address, coords));
-        console.log('data = ', data);
+        createPlacemark();
     }
 }
 
-// создавать из стораджа
-const array = require('./data.js');
-// console.log('array = ', array);
-
-const reviewsHtml = renderFn({ items: array });
-jsReviewsList.innerHTML = reviewsHtml;
-
-const createReview = (placemarkgl, address) => {
-    console.log('createReview: ', data);
+const updateReviews = (address) => {
     let is = false;
 
-    // найти нужный пласемарк в data по адресу
+    // найти нужный placemark в data по адресу
     data.forEach(placemark => {
         if (placemark.reviews.length > 0) {
             if (placemark.address === address) {
-
-                console.log('placemark: ', placemark);
                 const reviewsHtml = renderFn({ items: placemark.reviews });
-                console.log('reviewsHtml: ', reviewsHtml);
+
                 jsReviewsList.innerHTML = reviewsHtml; 
 
                 // сюда адрес из отзыва
-                placemarkgl.options.set('balloonContentHeader', placemark.address);
+                //placemarkgl.options.set('balloonContentHeader', placemark.address);
                 
                 // сюда отзыв
-                placemarkgl.options.set('balloonContentFooter', placemark.reviews[0]);
+                //placemarkgl.options.set('balloonContentFooter', placemark.reviews[0]);
 
                 is = true;
                 return;
@@ -164,16 +140,27 @@ const init = () => {
         center: [59.738750, 30.388758],
         zoom: 15,
         controls: [] //['typeSelector', 'zoomControl']
+        }, {
+           openBalloonOnClick: false,
     });
 
-    const clusterer = new ymaps.Clusterer({
+// https://yandex.ru/blog/mapsapi/56ed6c086b7e47acba2cf190
+// Создаем собственный макет с информацией о выбранном геообъекте.
+var customItemContentLayout = ymaps.templateLayoutFactory.createClass(
+// Флаг "raw" означает, что данные вставляют "как есть" без экранирования html.
+'здесь тект для карусели'
+);
+
+    clusterer = new ymaps.Clusterer({
         clusterDisableClickZoom: true,
         clusterOpenBalloonOnClick: true,
         clusterBalloonContentLayout: 'cluster#balloonCarousel',
         clusterBalloonPanelMaxMapArea: 0,
         clusterBalloonContentLayoutWidth: 200,
         clusterBalloonContentLayoutHeight: 200,
+        clusterBalloonItemContentLayout: customItemContentLayout,
         clusterBalloonPagerSize: 5,
+        openBalloonOnClick: false,
         preset: 'islands#invertedOrangeClusterIcons'
       });
     map.geoObjects.add(clusterer);
@@ -182,65 +169,21 @@ const init = () => {
         console.log('Кликнут кластер') ;    
     });*/
 
-    // клик на карусели кластера
+    // клик на карусели  todo
     map.balloon.events.add('click', (e) => {
-        console.log('клик на карусели кластера');
-        console.log(e);
-        const coords = e.get('coords');
-        console.log('coords ', coords);
-//!!!!!!!!!!!!!!! здесь не определить координаты
-        ymaps.geocode(coords).then((res) => {
-            let firstGeoObject = res.geoObjects.get(0);
-            address = firstGeoObject.getAddressLine();
-            jsAddress.innerHTML = address; // todo // дублирование кода1
-            createReview();
-            showPopup(jsPopup, e.get('domEvent').get('pageX'), e.get('domEvent').get('pageY'), array);                
-        });    
+           
     });
 
     map.events.add('click', e => {
-        // клик на пустом месте
-        console.log('click');
-        const coords = e.get('coords');
-        console.log('coords = ', coords);
+        // клик на пустом месте карты
+        coords_gl = e.get('coords');
 
-        // получить адрес по координатам
-        let address;
-        ymaps.geocode(coords).then((res) => {
+        ymaps.geocode(coords_gl).then((res) => {
             let firstGeoObject = res.geoObjects.get(0);
-            address = firstGeoObject.getAddressLine();
-            console.log(address);
+            address_gl = firstGeoObject.getAddressLine();
 
-            const placemark = new ymaps.Placemark(coords, {
-                hintContent: address,
-                balloonContentHeader: '', // сюда адрес из отзыва
-                balloonContentBody: address,
-                balloonContentFooter: '', // сюда отзыв
-                preset: 'islands#violetIcon',
-            });
-            clusterer.add(placemark);            
-
-            setPlaceMarkWithReview({}, address, coords);
-           
-            placemark.events.add('click', e => {
-                console.log(e);
-                const coords = e.get('coords');
-                console.log('placemark coords ', coords);
-                ymaps.geocode(coords).then((res) => {
-                    let firstGeoObject = res.geoObjects.get(0);
-                    address = firstGeoObject.getAddressLine();
-                    jsAddress.innerHTML = address; // todo // дублирование кода1
-                    createReview(placemark, address);
-                
-                    showPopup(jsPopup, e.get('domEvent').get('pageX'), e.get('domEvent').get('pageY'), array);                
-                }); 
-            });
-
-            // если новая метка
-            jsAddress.innerHTML = address; //todo // дублирование кода1
-            createReview(placemark, address);
-            showPopup(jsPopup, e.get('domEvent').get('pageX'), e.get('domEvent').get('pageY'), array);
-        });
+            openPopup(e.get('domEvent').get('pageX'), e.get('domEvent').get('pageY'), address_gl);
+        });    
     })
 }
 ymaps.ready(init);
