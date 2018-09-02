@@ -1,3 +1,9 @@
+/*
+todo
+- проверить совпадение координат, доп к адресу
+- карусель!!!
+- сохранять в localStorage и загружать оттуда
+*/
 import { 
     isEmptyObject,
     openPopup,
@@ -7,33 +13,34 @@ import {
 import './styles/styles.scss';
 import renderFn from './templates/review-template.hbs';
 
+let map;
 let clusterer;
 
 // текущие параметры объекта, с которым работаем
 let coords_gl = [0, 0];
 let address_gl = '';
-let id_gl;
+///let id_gl;
 
 const jsMap = document.querySelector('#map');
-    const jsPopup = document.querySelector('#js-popup');
-// закрыть окно с отзывами
-const jsBtnClose = document.querySelector('#js-btn-close');
-// список отзывов
-    const jsReviewsList = document.querySelector('#js-reviews-list');
 
-// добавить отзыв
-const jsBtnAdd = document.querySelector('#js-btn-add');
+
 
 // постоянное хранилище
 let storage = localStorage;
 
-jsBtnClose.addEventListener('click', (e) => {
-    jsPopup.style.display = 'none';
-});
 
+const cache = new Map();
+
+// добавить отзыв
+const jsBtnAdd = document.querySelector('#js-btn-add');
 jsBtnAdd.addEventListener('click', (e) => {
     let review = handleReview();
     if (review) {
+        const coord = geocode(address_gl);
+        console.log('coord = ', coord);    
+        console.log('coords_gl = ', coords_gl);    
+
+
         setPlaceMarkWithReview(review, address_gl, coords_gl);
         updateReviews(address_gl); // перерисовать отзывы
     }
@@ -43,6 +50,10 @@ const createPlacemark = () => {
     const placemark = new ymaps.Placemark(coords_gl, {
         hintContent: address_gl,
         preset: 'islands#violetIcon',
+
+        balloonContentHeader: 'место из отзыва', // сюда место из отзыва
+        balloonContentBody: '<strong>' + address_gl + '</strong>',
+        balloonContentFooter: 'отзыв', // сюда отзыв
     });
     //placemark.properties.set('myId', 1);
     placemark.properties.set('myAddress', address_gl);
@@ -81,10 +92,8 @@ let addReview = (review, address, coords) => {
 
     placemark.geo = coords;
     placemark.address = address;
-    if (isEmptyObject(placemark.review)) {
-        placemark.reviews = [];
-        placemark.reviews.push(review);
-    }
+    placemark.reviews = [];
+    placemark.reviews.push(review);
 
     return placemark;
 }    
@@ -107,6 +116,8 @@ const setPlaceMarkWithReview = (review, address, coords) => {
 }
 
 const updateReviews = (address) => {
+    // список отзывов
+    const jsReviewsList = document.querySelector('#js-reviews-list');
     let is = false;
 
     // найти нужный placemark в data по адресу
@@ -117,6 +128,9 @@ const updateReviews = (address) => {
 
                 jsReviewsList.innerHTML = reviewsHtml; 
 
+              ///  clusterer.options.set(
+               ///     'clusterBalloonItemContentLayout', ymaps.templateLayoutFactory.createClass(reviewsHtml)
+               /// );
                 // сюда адрес из отзыва
                 //placemarkgl.options.set('balloonContentHeader', placemark.address);
                 
@@ -135,8 +149,26 @@ const updateReviews = (address) => {
     console.log('jsReviewsList: ', jsReviewsList);
 }
 
+
+function geocode(address) {
+    if (cache.has(address)) {
+        return cache.get(address);
+    }
+
+    cache.set(address, ymaps.geocode(address)
+        .then(result => {
+            const points = result.geoObjects.toArray();
+
+            if (points.length) {
+                return points[0].geometry.getCoordinates();
+            }
+        }));
+
+    return cache.get(address);
+}
+
 const init = () => {
-    const map = new ymaps.Map('map', {
+    map = new ymaps.Map('map', {
         center: [59.738750, 30.388758],
         zoom: 15,
         controls: [] //['typeSelector', 'zoomControl']
@@ -144,12 +176,15 @@ const init = () => {
            openBalloonOnClick: false,
     });
 
-// https://yandex.ru/blog/mapsapi/56ed6c086b7e47acba2cf190
-// Создаем собственный макет с информацией о выбранном геообъекте.
-var customItemContentLayout = ymaps.templateLayoutFactory.createClass(
-// Флаг "raw" означает, что данные вставляют "как есть" без экранирования html.
-'здесь тект для карусели'
-);
+    // https://yandex.ru/blog/mapsapi/56ed6c086b7e47acba2cf190
+    // Создаем собственный макет с информацией о выбранном геообъекте.
+    var customItemContentLayout = ymaps.templateLayoutFactory.createClass(
+    // Флаг "raw" означает, что данные вставляют "как есть" без экранирования html.
+            '<h2 class="ballon_header">{{ properties.balloonContent|raw }}</h2>' +
+            '<div class="ballon_body">{{ properties.balloonContentBody|raw }}</div>' +
+            '<div class="ballon_footer">{{ properties.balloonContentFooter|raw }}</div>'
+
+    );
 
     clusterer = new ymaps.Clusterer({
         clusterDisableClickZoom: true,
@@ -171,13 +206,13 @@ var customItemContentLayout = ymaps.templateLayoutFactory.createClass(
 
     // клик на карусели  todo
     map.balloon.events.add('click', (e) => {
-           
+        console.log('карусель', e, e.get('target'));   
     });
 
     map.events.add('click', e => {
         // клик на пустом месте карты
         coords_gl = e.get('coords');
-
+       
         ymaps.geocode(coords_gl).then((res) => {
             let firstGeoObject = res.geoObjects.get(0);
             address_gl = firstGeoObject.getAddressLine();
@@ -186,4 +221,11 @@ var customItemContentLayout = ymaps.templateLayoutFactory.createClass(
         });    
     })
 }
-ymaps.ready(init);
+
+
+
+
+ymaps.ready(async () => {
+    init();
+});    
+

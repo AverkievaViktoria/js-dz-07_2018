@@ -11,7 +11,15 @@ export const isEmptyObject = (obj) => {
     }
     return true;
 }
+const jsPopup = document.querySelector('#js-popup');
+const jsBtnClose = document.querySelector('#js-btn-close');
 
+// закрыть окно
+jsBtnClose.addEventListener('click', (e) => {
+    jsPopup.style.display = 'none';
+});
+
+// скорректировать положение окна
 const checkPopupPosition = (x, y, w, h) => {
 	// размер окна браузера
 	const width=document.body.clientWidth; // ширина  
@@ -33,8 +41,9 @@ const checkPopupPosition = (x, y, w, h) => {
 	return {x, y};
 }
 
+// открыть окно
 export const openPopup = (x, y, address) => {
-	const jsPopup = document.querySelector('#js-popup');
+	//const jsPopup = document.querySelector('#js-popup');
 	let pos = checkPopupPosition(x, y, jsPopup.offsetWidth, jsPopup.offsetHeight);
 	
 	const jsAddress = document.querySelector('#js-address');
@@ -50,7 +59,12 @@ export const openPopup = (x, y, address) => {
 }
 
 
-// возвращает объект - todo в модуль!!!, сюда проверку
+
+
+
+
+
+// обработка ввода отзыва - возвращает объект отзыв
 export let handleReview = () => {
     const jsInputName = document.querySelector('#js-input-name');
     const jsInputPlace = document.querySelector('#js-input-place');
