@@ -50,13 +50,15 @@ const createPlacemark = () => {
     const placemark = new ymaps.Placemark(coords_gl, {
         hintContent: address_gl,
         preset: 'islands#violetIcon',
-
-        balloonContentHeader: 'место из отзыва', // сюда место из отзыва
-        balloonContentBody: '<strong>' + address_gl + '</strong>',
-        balloonContentFooter: 'отзыв', // сюда отзыв
+    }, {
+        hasBallon: false,
+        openBallonOnClick: false,
+        hasHint: false
     });
-    //placemark.properties.set('myId', 1);
     placemark.properties.set('myAddress', address_gl);
+    placemark.properties.set('balloonContentHeader', 'место из отзыва');
+    placemark.properties.set('balloonContentBody', '<strong>' + address_gl + '</strong>');
+    placemark.properties.set('balloonContentFooter', 'отзыв');
 //    placemark.properties.set('myCoords', coords_gl);
 
     clusterer.add(placemark);            
@@ -187,7 +189,14 @@ const init = () => {
     );
 
     clusterer = new ymaps.Clusterer({
+        preset: 'islands#invertedOrangeClusterIcons',
+        groupByCoordinates: false,
         clusterDisableClickZoom: true,
+        clusterHideOnBalloonOpen: false,
+        geoObjectsHideIconOnBalloonOpen: false,
+        clusterBalloonContentLayout: 'cluster#balloonCarousel',
+        clusterBalloonItemContentLayout: customItemContentLayout,
+        /*clusterDisableClickZoom: true,
         clusterOpenBalloonOnClick: true,
         clusterBalloonContentLayout: 'cluster#balloonCarousel',
         clusterBalloonPanelMaxMapArea: 0,
@@ -196,7 +205,7 @@ const init = () => {
         clusterBalloonItemContentLayout: customItemContentLayout,
         clusterBalloonPagerSize: 5,
         openBalloonOnClick: false,
-        preset: 'islands#invertedOrangeClusterIcons'
+        preset: 'islands#invertedOrangeClusterIcons'*/
       });
     map.geoObjects.add(clusterer);
 

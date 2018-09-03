@@ -60,11 +60,9 @@ export const openPopup = (x, y, address) => {
 
 
 
-
-
-
-
-// обработка ввода отзыва - возвращает объект отзыв
+// обработка ввода отзыва 
+// - проверяет корректность ввода
+// - возвращает объект отзыв для хранения в data
 export let handleReview = () => {
     const jsInputName = document.querySelector('#js-input-name');
     const jsInputPlace = document.querySelector('#js-input-place');
