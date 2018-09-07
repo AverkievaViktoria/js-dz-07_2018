@@ -1,0 +1,212 @@
+//--- Colors ---//
+$white: #fff;
+$beige: #f0f0f0;
+$orange: #ff8663;
+$blue: #6f68c0;
+
+$light-gray: #9f9f9f;
+$light-grey: #9f9f9f;
+
+$dark-gray: #4f4f4f;
+$dark-grey: #4f4f4f; // rgb(79, 79, 79);
+$dl-grey: rgba(79, 79, 79, 0.749);
+
+$gray: #999; 
+$grey: #999; 
+
+//--- Mixins ---//
+%clearfix {
+  &:after {
+    content: "";
+    display: block;
+    clear: both;
+  }
+}
+
+@mixin centered($axis: 'both') {
+  position: absolute;
+  @if $axis=='x' {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  @if $axis=='y' {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  @if $axis=='both' {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+//--- Global ---//
+* {
+	box-sizing: border-box;
+}
+
+body, html {
+  overflow: hidden;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+  font: 14px/1.41 'Fira Sans', 'Arial', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.42;
+}
+
+ul {
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+}
+
+#homework-container {
+    width: 100%;
+    height:100%;
+}
+
+.popup {
+    width: 380px;
+    height: 550px;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10000;
+    background-color: $white;
+    display: none;
+    border-radius: 10px;
+}
+
+.popup-header {
+    position: relative;
+    width: 100%;
+    height: 45px;
+    padding: 10px;
+    border-radius: 15px 15px 0px 0px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+    color: $white;
+    background-color: $orange;
+}
+
+.popup-header-icon {
+
+}
+
+.popup-header-text {
+
+}
+
+.popup-header-button {
+    float: right;
+    font-size: 16px;
+    font-family: "FiraSans";
+    color: $white;
+    background-color: $orange;
+    cursor: pointer;
+}
+
+
+.popup-main {
+    height: 350px;
+    padding: 10px;
+    font-family: 'Fira Sans', sans-serif;
+}
+
+.popup-main-reviews {
+    height: 155px;
+    overflow: auto;
+    border-bottom: solid 1px $beige;
+}
+.review-list-item {
+    font-size: 15px;
+    color: $dark-gray;
+}
+
+.form-header{
+    padding: 15px 0;
+    text-transform: uppercase;
+    color: $orange;
+}
+
+.form-input,
+.form-input,
+.form-textarea {
+    padding: 0px 10px;
+    margin-bottom: 15px;
+    width: 100%;
+    height: 34px;
+    border: 1px solid $dark-gray;
+    border-radius: 20px;
+    outline: none;
+    font-size: 15px;
+    color: $light-gray; 
+}
+
+.form-textarea {
+    padding-top: 10px;
+    height: 130px;
+    resize: none;
+}
+
+.add-button {
+    display: inline-block;
+    float: right;
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 15px;
+    border: none;
+    color: $white;
+    background-color: $orange;
+    cursor: pointer;
+}
+
+.item-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: $dark-gray;
+}
+.item-date {
+    font-size: 16px;
+    color: $dl-grey;
+}
+.item-place {
+    font-size: 16px;
+    color: $dl-grey
+}
+.item-review {
+    font-size: 15px;
+    color: $dark-gray;
+}
+
+
+.clasterer-address {
+    text-decoration: underline;
+    cursor: pointer;
+    color: $blue;
+}
+.clasterer-list-item {
+
+}
+.clasterer-place {
+    font-weight: bold;
+}
+.clasterer-review {
+
+}
+.clasterer-date {
+    font-size: 12px;
+    color: $dark-gray;
+    padding-left: 20px;
+}
+
+#logo {
+    position: absolute;
+    right: 10px;
+    bottom: 30px;
+    z-index: 1000;
+}
