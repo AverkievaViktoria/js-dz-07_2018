@@ -1,12 +1,18 @@
 import { 
-    isEmptyObject,
     openPopup,
     handleReview
-} from './utils';
+} from './popup';
+import { 
+    isEmptyObject,
+    addReview,
+    findPlacemark
+} from './data';
 
 import './styles/styles.scss';
 import renderFnReview from './templates/review-template.hbs';
 import renderFnClusterer from './templates/clusterer-template.hbs';
+
+let data = [];
 
 let map;
 let clusterer;
@@ -15,23 +21,16 @@ let clusterer;
 let coords_gl = [0, 0];
 let address_gl = '';
 let placemark_gl;
-///let id_gl;
-
-const jsMap = document.querySelector('#map');
-
-// постоянное хранилище
-let storage = localStorage;
 
 const cache = new Map();
 
 // добавить отзыв
 const jsBtnAdd = document.querySelector('#js-btn-add');
 jsBtnAdd.addEventListener('click', (e) => {
-    let review = handleReview();
+    const review = handleReview();
+
     if (review) {
         const coord = geocode(address_gl);
-        //console.log('coord = ', coord);    
-        //console.log('coords_gl = ', coords_gl);    
 
         setPlaceMarkWithReview(review, address_gl, coords_gl);
         updateReviews(address_gl); // перерисовать отзывы
@@ -39,6 +38,7 @@ jsBtnAdd.addEventListener('click', (e) => {
     }
 });
 
+// добавление новой метки на карте
 const createPlacemark = () => {
     const placemark = new ymaps.Placemark(coords_gl, {
         hintContent: address_gl,
@@ -65,54 +65,15 @@ const createPlacemark = () => {
     });
 };
 
-/////////////////////////////// model (данные)
-let data = [];
-/*
-let placemark = {};
-placemark.id = 1; - не нужен! поиск по адресу
-placemark.geo = [1, 1];
-placemark.address = 'address';
-placemark.reviews = [];
-    let review = {};
-    review.name = 'inputName';
-    review.place = 'inputPlace';
-    review.date = new Date().toLocaleString();
-    review.review = 'inputReview';
-placemark.reviews.push(review);
-data.push(placemark);
-*/
-
-let addReview = (review, address, coords) => {
-    let placemark = {};
-
-    placemark.geo = coords;
-    placemark.address = address;
-    placemark.reviews = [];
-    placemark.reviews.push(review);
-
-    return placemark;
-}    
-
-// возвращает placemark при совпадении адреса и координат
-const findPlacemark = (address) => {
-    let result_placemark;
-    data.forEach(placemark => {
-        if (placemark.address == address) {
-            result_placemark = placemark;
-            return;
-        }
-    });   
-
-    return result_placemark;
-}
-
 const setPlaceMarkWithReview = (review, address, coords) => {
     // найти в data заданный placemark по адресу, добавить в него отзыв
     let isAddressExists = false;
+
     data.forEach(placemark => {
         if (placemark.address == address) {
             placemark.reviews.push(review);
             isAddressExists = true;
+    
             return;
         }
     });
@@ -124,7 +85,7 @@ const setPlaceMarkWithReview = (review, address, coords) => {
 }
 
 const updateClusterer = (placemark) => {
-    let dataPlacemark = findPlacemark(address_gl);
+    let dataPlacemark = findPlacemark(data, address_gl);
     let clustererHtml =  '<div class="clasterer-address">' + dataPlacemark.address + '</div>';
 
     clustererHtml += renderFnClusterer({ items: dataPlacemark.reviews });
@@ -185,9 +146,8 @@ const init = () => {
         {
             build: function () {
                 this.constructor.superclass.build.call(this);
-
                 const href = this.getParentElement().querySelector('.clasterer-address');
-                console.log('href = ', href);
+ 
                 href.addEventListener('click', (e) => {
                     address_gl = e.target.innerHTML;
                     openPopup(e.pageX, e.pageY, address_gl);
@@ -225,3 +185,6 @@ const init = () => {
 ymaps.ready(async () => {
     init();
 });    
+
+
+

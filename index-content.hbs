@@ -2,14 +2,14 @@
 <html lang="ru">
 <head>
     <meta charset="utf-8">
-    <title>YA-MAPS</title>
+    <title>ГеоОтзыв</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
     <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
 </head>
 <body>
 
-    <div class="popup" id="js-popup">
+    <div class="popup" id="js-popup" draggable="true">
         <div class="popup-header">
             <span class="popup-header-icon">
                 <i class="fa fa-map-marker fa-2x  popup-header-marker" aria-hidden="true"></i>
@@ -22,9 +22,9 @@
                 <ul class="review-list" id="js-reviews-list">
                 </ul>
             </div>
-            <div class="popup-main-add clearfix">
+            <div class="popup-main-add">
                 <div class="form-header">Ваш отзыв</div>
-                <form name="form" method="POST">
+                <form>
                     <input type="text" id="js-input-name" name="name" placeholder="Ваше имя" class="form-input">
                     <input type="text" id="js-input-place" name="place" placeholder="Укажите место" class="form-input">
                     <textarea name="message" id="js-input-review" placeholder="Поделитесь впечатлениями" class="form-textarea"></textarea>
