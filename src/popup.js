@@ -1,50 +1,52 @@
-/////////////////////////////// view (отображение)
+// ///////////////////////////// view (отображение)
 // функции для работы с окном с отзывами
 
 const jsPopup = document.querySelector('#js-popup');
 const jsBtnClose = document.querySelector('#js-btn-close');
 
 // закрыть окно
-jsBtnClose.addEventListener('click', (e) => {
+jsBtnClose.addEventListener('click', () => {
     jsPopup.style.display = 'none';
 });
 
 // скорректировать положение окна
 const checkPopupPosition = (x, y, w, h) => {
-	// размер окна браузера
-	const width=document.body.clientWidth; // ширина  
-	const height=document.body.clientHeight; // высота
+    // размер окна браузера
+    const width=document.body.clientWidth; // ширина  
+    const height=document.body.clientHeight; // высота
 
-	// значения по-умолчанию
-	if ((h==0)||(w==0)) {
-		h = 550;
-		w = 380;
-	}
+    // значения по-умолчанию
+    if ((h==0)||(w==0)) {
+        h = 550;
+        w = 380;
+    }
 
-	if ((x+w) > width) {
-		x = width - w;
-	}
-	if ((y+h) > height) {
-		y = height - h;
-	}
+    if ((x+w) > width) {
+        x = width - w;
+    }
+    if ((y+h) > height) {
+        y = height - h;
+    }
 
-	return {x, y};
+    return { x, y };
 }
 
 // открыть окно
 export const openPopup = (x, y, address) => {
-	let pos = checkPopupPosition(x, y, jsPopup.offsetWidth, jsPopup.offsetHeight);
-	
-	const jsAddress = document.querySelector('#js-address');
-	jsAddress.innerHTML = address; 
+    let pos = checkPopupPosition(x, y, jsPopup.offsetWidth, jsPopup.offsetHeight);
+    
+    const jsAddress = document.querySelector('#js-address');
+    
+    jsAddress.innerHTML = address; 
 
-	const jsReviewsList = document.querySelector('#js-reviews-list');
-	jsReviewsList.innerHTML = 'Отзывов пока нет...';
+    const jsReviewsList = document.querySelector('#js-reviews-list');
 
-	jsPopup.style.left = pos.x + 'px';
-	jsPopup.style.top = pos.y + 'px';
+    jsReviewsList.innerHTML = 'Отзывов пока нет...';
 
-	jsPopup.style.display = 'block';
+    jsPopup.style.left = pos.x + 'px';
+    jsPopup.style.top = pos.y + 'px';
+
+    jsPopup.style.display = 'block';
 }
 
 // обработка ввода отзыва 
@@ -56,6 +58,7 @@ export let handleReview = () => {
     const jsInputReview = document.querySelector('#js-input-review');
 
     let message = '';
+
     if (!jsInputName.value) {
         message += 'Не указано имя. ' 
     }
@@ -67,6 +70,7 @@ export let handleReview = () => {
     }
     if (message) {
         alert(message);
+
         return undefined;
     }
 
@@ -77,7 +81,7 @@ export let handleReview = () => {
     review.date = new Date().toLocaleString();
     review.review = jsInputReview.value;
 
-	jsInputName.value = '';
+    jsInputName.value = '';
     jsInputPlace.value = '';
     jsInputReview.value = '';
 
@@ -85,7 +89,9 @@ export let handleReview = () => {
 }
 
 let currentDrag;
+
 const addListeners = (target) => {
+
     const handleDragStart = (e) => {
         currentDrag = { source: target, node: e.target };
     }

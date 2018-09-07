@@ -1,4 +1,4 @@
-/////////////////////////////// model (данные)
+// ///////////////////////////// model (данные)
 /*
 let placemark = {};
 placemark.id = 1; - не нужен! поиск по адресу
@@ -20,6 +20,7 @@ export const isEmptyObject = (obj) => {
             return false;
         }
     }
+    
     return true;
 }
 
@@ -36,15 +37,15 @@ export const addReview = (review, address, coords) => {
 
 // возвращает placemark при совпадении адреса и координат
 export const findPlacemark = (data, address) => {
-    let result_placemark;
+    let resultPlacemark;
 
     data.forEach(placemark => {
         if (placemark.address == address) {
-            result_placemark = placemark;
+            resultPlacemark = placemark;
 
             return;
         }
     });   
 
-    return result_placemark;
+    return resultPlacemark;
 }
